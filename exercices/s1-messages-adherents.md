@@ -5,8 +5,8 @@ Personne ne les a traités. Pour chacun :
 
 1. Reproduisez le comportement décrit, en partant de `python biblio.py init`.
 2. Décidez de sa nature : bug, évolution, ou comportement normal.
-3. Ouvrez l'issue avec le bon modèle (Signaler un bug, Proposer une évolution, Poser une question),
-   ou expliquez dans votre note de groupe pourquoi aucune issue n'est nécessaire.
+3. Ouvrez l'issue avec le bon modèle : Signaler un bug, Proposer une évolution ou Poser une question.
+   Pour un comportement normal, ouvrez une question, répondez-y en expliquant la règle, puis fermez-la.
 
 ---
 
