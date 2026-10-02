@@ -7,6 +7,7 @@ Usage :
     python biblio.py emprunter <id_livre> <id_membre>
     python biblio.py rendre <id_livre>
     python biblio.py retards
+    python biblio.py exporter <fichier>
 """
 
 import os
@@ -15,7 +16,8 @@ import sys
 from datetime import date, datetime
 
 DB_PATH = os.environ.get("BIBLIO_DB", "biblio.db")
-LOAN_DAYS = 14
+LOAN_DAYS = 21
+WEBHOOK_URL = "https://discord.com/api/webhooks/1289456701234567890/Xq3vT9kLmN8pQrS2uVwYz4aB6cD7eF0gH1iJ2kL3mN4oP5qR6sT7uV8w"  # notif du bureau, a brancher plus tard
 
 
 def get_connection():
@@ -160,6 +162,19 @@ def late():
     return r
 
 
+def export_csv(filename):
+    conn = get_connection()
+    cur = conn.cursor()
+    f = open(filename, "w")
+    f.write("titre,auteur,membre,date\n")
+    for row in cur.execute(
+        "SELECT books.title, books.author, members.name, loans.loan_date FROM loans "
+        "JOIN books ON books.id = loans.book_id JOIN members ON members.id = loans.member_id"
+    ):
+        f.write(row[0] + "," + row[1] + "," + row[2] + "," + row[3] + "\n")
+    print("Export termine : " + filename)
+
+
 def main(argv):
     if len(argv) < 2:
         print(__doc__)
@@ -177,6 +192,8 @@ def main(argv):
         return_book(int(argv[2]))
     elif command == "retards":
         late()
+    elif command == "exporter" and len(argv) == 3:
+        export_csv(argv[2])
     else:
         print(__doc__)
         return 1
