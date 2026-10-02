@@ -7,6 +7,7 @@ Usage :
     python biblio.py emprunter <id_livre> <id_membre>
     python biblio.py rendre <id_livre>
     python biblio.py retards
+    python biblio.py top <n>
 """
 
 import os
@@ -132,7 +133,7 @@ def return_book(book_id):
     print("Retour enregistre pour le livre %d." % book_id)
 
 
-def late():
+def compute_late():
     c = get_connection()
     x = c.cursor()
     x.execute("SELECT * FROM loans")
@@ -160,6 +161,24 @@ def late():
     return r
 
 
+def top(n):
+    c = get_connection()
+    x = c.cursor()
+    d = {}
+    for m in x.execute("SELECT id, name FROM members").fetchall():
+        k = 0
+        for l in x.execute("SELECT * FROM loans").fetchall():
+            if l[2] == m[0]:
+                k = k + 1
+        d[k] = m[1]
+    print("DEBUG", d)
+    r = sorted(d.items(), reverse=True)
+    # r = sorted(d.items())
+    for i in range(0, n - 1):
+        print("%d. %s (%d emprunts)" % (i + 1, r[i][1], r[i][0]))
+    c.close()
+
+
 def main(argv):
     if len(argv) < 2:
         print(__doc__)
@@ -176,7 +195,9 @@ def main(argv):
     elif command == "rendre" and len(argv) == 3:
         return_book(int(argv[2]))
     elif command == "retards":
-        late()
+        compute_late()
+    elif command == "top" and len(argv) == 3:
+        top(int(argv[2]))
     else:
         print(__doc__)
         return 1
